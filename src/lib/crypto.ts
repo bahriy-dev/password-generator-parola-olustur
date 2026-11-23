@@ -75,7 +75,7 @@ export function generateRandomPassword(options: RandomPasswordOptions): string {
   }
 
   if (options.excludedChars.length > 0) {
-    const exSet = new Set(options.excludedChars.split(''));
+    const exSet = new Set(Array.from(options.excludedChars));
     activeLowercase = activeLowercase.split('').filter((c) => !exSet.has(c)).join('');
     activeUppercase = activeUppercase.split('').filter((c) => !exSet.has(c)).join('');
     activeNumbers = activeNumbers.split('').filter((c) => !exSet.has(c)).join('');
@@ -87,8 +87,8 @@ export function generateRandomPassword(options: RandomPasswordOptions): string {
   if (options.customCharset.trim().length > 0) {
     let custom = options.customCharset.trim();
     if (options.excludedChars.length > 0) {
-      const exSet = new Set(options.excludedChars.split(''));
-      custom = custom.split('').filter((c) => !exSet.has(c)).join('');
+      const exSet = new Set(Array.from(options.excludedChars));
+      custom = Array.from(custom).filter((c) => !exSet.has(c)).join('');
     }
     pool = custom;
   } else {

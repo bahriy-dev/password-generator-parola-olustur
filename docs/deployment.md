@@ -12,7 +12,7 @@ npm start
 
 This application uses dynamic rendering and request-specific CSP nonces. Deploy it with a Next.js-compatible Node server rather than assuming it is a static HTML export. No database or application secret is needed for the built-in tools.
 
-`next start` accepts `PORT`; for a local custom port, use `npm start -- --port 3100`. Serve production traffic over HTTPS. The build may need network access to fetch fonts used by `next/font`.
+`next start` accepts `PORT`; for a local custom port, use `npm start -- --port 3100`. Serve production traffic over HTTPS. Geist fonts are bundled under `src/app/fonts` with their license; building does not fetch Google Fonts.
 
 ## Railway
 

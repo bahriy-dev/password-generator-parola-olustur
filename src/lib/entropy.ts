@@ -22,10 +22,10 @@ export function getActivePoolSize(options: RandomPasswordOptions): number {
   if (options.customCharset.trim().length > 0) {
     let custom = options.customCharset.trim();
     if (options.excludedChars.length > 0) {
-      const exSet = new Set(options.excludedChars.split(''));
-      custom = custom.split('').filter((c) => !exSet.has(c)).join('');
+      const exSet = new Set(Array.from(options.excludedChars));
+      custom = Array.from(custom).filter((c) => !exSet.has(c)).join('');
     }
-    return new Set(custom.split('')).size || 1;
+    return new Set(Array.from(custom)).size || 1;
   }
 
   let chars = '';
@@ -40,7 +40,7 @@ export function getActivePoolSize(options: RandomPasswordOptions): number {
   }
 
   if (options.excludedChars.length > 0) {
-    const exSet = new Set(options.excludedChars.split(''));
+    const exSet = new Set(Array.from(options.excludedChars));
     chars = chars.split('').filter((c) => !exSet.has(c)).join('');
   }
 
@@ -96,7 +96,8 @@ export function analyzePassword(
     pinOptions?: PinOptions;
   }
 ): PasswordAnalysis {
-  const length = password.length;
+  const characters = Array.from(password);
+  const length = characters.length;
   if (length === 0) {
     return {
       password: '',
@@ -126,11 +127,11 @@ export function analyzePassword(
   const charCounts = new Map<string, number>();
   let consecutiveDuplicates = 0;
 
-  for (let i = 0; i < password.length; i++) {
-    const char = password[i];
+  for (let i = 0; i < characters.length; i++) {
+    const char = characters[i];
     charCounts.set(char, (charCounts.get(char) || 0) + 1);
 
-    if (i > 0 && char === password[i - 1]) {
+    if (i > 0 && char === characters[i - 1]) {
       consecutiveDuplicates++;
     }
 

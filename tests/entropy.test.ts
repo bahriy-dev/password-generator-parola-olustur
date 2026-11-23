@@ -16,3 +16,15 @@ test('random entropy stays finite for large custom charsets',()=>{
  assert.ok(Math.abs(entropyBits-Math.round(128*Math.log2(300)*10)/10)<0.15,String(entropyBits));
  assert.equal(strengthLevel,'very_strong');
 });
+
+test('Unicode passwords use the same code points for generation and analysis',()=>{
+ const randomOptions:RandomPasswordOptions={length:4,lowercase:false,uppercase:false,numbers:false,symbols:false,excludeSimilar:false,noAdjacentDuplicates:false,requireEachCategory:false,customCharset:'😀😁',excludedChars:''};
+ const result=analyzePassword('😀😁😀😁','random',{randomOptions});
+ assert.equal(result.length,4);
+ assert.equal(result.poolSize,2);
+ assert.equal(result.entropyBits,4);
+ assert.equal(result.uniqueChars,2);
+ assert.equal(result.symbolsCount,4);
+ assert.equal(result.repeatedChars,2);
+ assert.equal(analyzePassword('😀😀😁😁','random',{randomOptions}).consecutiveDuplicates,2);
+});

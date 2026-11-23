@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./fonts.css";
 
 /* dark: utilities follow the in-app theme toggle (html.dark), not the OS preference. */
 @custom-variant dark (&:where(.dark, .dark *));

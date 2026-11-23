@@ -2,7 +2,6 @@ import { AppShell } from '@/components/shell/AppShell';
 import { I18nProvider } from '@/lib/i18n';
 import { ThemeProvider } from '@/lib/theme/theme-context';
 import type { Metadata,Viewport } from 'next';
-import { Geist,Geist_Mono } from 'next/font/google';
 import { headers } from 'next/headers';
 import { isLocale,LOCALES } from '@/lib/i18n/routing';
 import type { LangParams } from '@/lib/i18n/server';
@@ -10,17 +9,6 @@ import { UI } from '@/lib/i18n/ui';
 import { SITE_NAME,SITE_URL } from '@/lib/site';
 import { notFound } from 'next/navigation';
 import '../globals.css';
-
-// latin-ext carries Turkish ğ, ş, ı, İ; without it those letters fall back to a different system font.
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin', 'latin-ext'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin', 'latin-ext'],
-});
 
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }));
@@ -74,7 +62,7 @@ export default async function RootLayout({ children, params }: LangParams & { ch
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className="antialiased"
       >
         <ThemeProvider>
           <I18nProvider lang={lang}>
