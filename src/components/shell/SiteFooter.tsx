@@ -6,7 +6,7 @@ import { SITE_NAME } from '@/lib/site';
 import Link from 'next/link';
 import { OPEN_CONSENT_EVENT } from './ConsentBanner';
 
-const REPOSITORY = 'https://github.com/bahriy-dev/parola-olustur';
+const REPOSITORY = 'https://github.com/bahriy-dev/password-generator-parola-olustur';
 const link = 'transition-colors hover:text-fg';
 
 /** One quiet row: name and year, then the few links people look for at the bottom of a page. */

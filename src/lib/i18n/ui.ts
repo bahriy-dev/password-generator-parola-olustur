@@ -64,7 +64,7 @@ const tr = {
     cookieSettings: 'Çerez tercihleri',
   },
   generator: {
-    title: 'Parola oluşturucu',
+    title: 'Güçlü şifre ve parola oluşturucu',
     modeLabel: 'Üretim türü',
     modes: { random: 'Rastgele parola', passphrase: 'Parola ifadesi', pin: 'PIN' },
     output: 'Oluşturulan değer',
@@ -282,8 +282,8 @@ const tr = {
   },
   pages: {
     home: {
-      title: 'Parola Oluştur – Güçlü ve Rastgele Parola Oluşturucu',
-      description: 'Tarayıcınızda Web Crypto ile güçlü rastgele parola, akılda kalıcı parola ifadesi ve PIN oluşturun. Uzunluk, karakter türleri ve gelişmiş kurallar ayarlanabilir.',
+      title: 'Güçlü Şifre Oluşturucu – Ücretsiz | Parola Oluştur',
+      description: 'Güçlü ve rastgele şifre oluşturun. Ücretsiz parola oluşturucu ile uzunluğu ve karakterleri seçin; parola ifadesi veya PIN üretin. Şifreler cihazınızda kalır.',
       appName: 'Parola oluşturucu',
       appDescription: 'Web Crypto ile tarayıcıda rastgele parola, parola ifadesi ve PIN üretimi.',
     },
