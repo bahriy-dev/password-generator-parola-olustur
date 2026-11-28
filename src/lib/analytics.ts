@@ -11,7 +11,9 @@ export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '';
  * First-party usage analytics in DevControl (the owner's monitoring panel). The key is public (it only lets the
  * collector accept events for this site); the tracker sends nothing before consent and stores no cookies.
  */
-export const DEVCONTROL_KEY = process.env.NEXT_PUBLIC_DEVCONTROL_KEY ?? '';
+const configuredKey = process.env.NEXT_PUBLIC_DEVCONTROL_KEY || 'pk_HLIh1taMsSTiqqXY5DfsGmX0';
+/** Public site key (not a secret); NEXT_PUBLIC_DEVCONTROL_KEY=off disables the tracker. */
+export const DEVCONTROL_KEY = configuredKey === 'off' ? '' : configuredKey;
 export const DEVCONTROL_ORIGIN = (process.env.NEXT_PUBLIC_DEVCONTROL_ORIGIN ?? 'https://devcontrol.up.railway.app').replace(/\/$/, '');
 export const ANALYTICS_ENABLED = Boolean(GA_ID || GTM_ID || META_PIXEL_ID || DEVCONTROL_KEY);
 

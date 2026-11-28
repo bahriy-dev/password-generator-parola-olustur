@@ -11,7 +11,7 @@ import { track } from '@/lib/devcontrol';
 import { useLocale } from '@/lib/i18n';
 import { localizeMessage } from '@/lib/i18n/messages';
 import Link from 'next/link';
-import { useCallback,useEffect,useMemo,useState,type CSSProperties,type ReactNode } from 'react';
+import { useCallback,useEffect,useMemo,useRef,useState,type CSSProperties,type ReactNode } from 'react';
 
 type OutputFormat = 'plain' | 'hex' | 'base64' | 'base64url';
 
@@ -171,23 +171,31 @@ export function Generator({ initialMode = 'random', heading }: { initialMode?: G
   const settings = useCallback((): Record<string, string | number | boolean> => mode === 'random'
     ? { mode, length: randomOptions.length, upper: randomOptions.uppercase, lower: randomOptions.lowercase, digit: randomOptions.numbers, symbol: randomOptions.symbols }
     : { mode }, [mode, randomOptions]);
-  // One event once the settings rest, not one per slider step.
+  // One event once the settings rest, not one per slider step. A value generated before consent (e.g. on page
+  // load) is reported right before it is copied, so the generate → copy funnel stays complete.
+  const reported = useRef('');
+  const reportGenerated = useCallback(() => {
+    if (!password || reported.current === password) return;
+    reported.current = password;
+    track('password_generated', settings());
+  }, [password, settings]);
   useEffect(() => {
     if (!password) return;
-    const timer = setTimeout(() => track('password_generated', settings()), 1500);
+    const timer = setTimeout(() => { if (window.dca) reportGenerated(); }, 1500);
     return () => clearTimeout(timer);
-  }, [password, settings]);
+  }, [password, reportGenerated]);
 
   const regenerate = useCallback(() => setNonce((n) => n + 1), []);
   const copy = useCallback(async () => {
     if (!displayed) return;
+    reportGenerated();
     track('password_copy_clicked', { mode });
     if (await copyText(displayed)) {
       track('password_copied', { mode });
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } else track('ui_error', { code: 'copy_failed' });
-  }, [displayed, mode]);
+  }, [displayed, mode, reportGenerated]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
