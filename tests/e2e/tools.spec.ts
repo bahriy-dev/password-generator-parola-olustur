@@ -80,8 +80,9 @@ test('single-algorithm hash tools redirect to their hash page, which carries the
 test('search palette finds tools by any spelling and the mobile menu works',async({page},testInfo)=>{
  await page.goto('/');
  // ⌘K / Ctrl+K opens the palette; "sha-256", "SHA 256" and "sha256" all lead to the same tool.
- await page.keyboard.press(process.platform==='darwin'?'Meta+k':'Control+k');
- const input=page.getByRole('combobox',{name:'Araçlarda ara'});await expect(input).toBeFocused();
+ // The shortcut listener attaches on hydration; retry the key press until the palette has opened.
+ const input=page.getByRole('combobox',{name:'Araçlarda ara'});
+ await expect(async()=>{await page.keyboard.press(process.platform==='darwin'?'Meta+k':'Control+k');await expect(input).toBeFocused({timeout:1000});}).toPass({timeout:15000});
  await input.fill('SHA 256');await expect(page.getByRole('listbox',{name:'Araçlarda ara'}).getByRole('option').first()).toContainText('SHA-256');
  await page.keyboard.press('Enter');await expect(page).toHaveURL(/\/hash\/sha-256$/);
  await page.keyboard.press(process.platform==='darwin'?'Meta+k':'Control+k');await page.getByRole('combobox',{name:'Araçlarda ara'}).fill('zzzz-yok');

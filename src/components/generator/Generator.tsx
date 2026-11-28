@@ -7,10 +7,11 @@ import { buildSnippet,SNIPPET_LANGUAGES,type SnippetLanguage } from '@/lib/snipp
 import { ENGLISH_WORDS,TURKISH_WORDS } from '@/lib/wordlists';
 import type { GenerationMode,PassphraseOptions,PinOptions,RandomPasswordOptions,StrengthLevel } from '@/types/password';
 import { Check,ChevronDown,ChevronRight,Copy,Eye,EyeOff,RotateCw } from 'lucide-react';
+import { track } from '@/lib/devcontrol';
 import { useLocale } from '@/lib/i18n';
 import { localizeMessage } from '@/lib/i18n/messages';
 import Link from 'next/link';
-import { useCallback,useEffect,useMemo,useState,type CSSProperties,type ReactNode } from 'react';
+import { useCallback,useEffect,useMemo,useRef,useState,type CSSProperties,type ReactNode } from 'react';
 
 type OutputFormat = 'plain' | 'hex' | 'base64' | 'base64url';
 
@@ -166,14 +167,35 @@ export function Generator({ initialMode = 'random', heading }: { initialMode?: G
   const displayed = useMemo(() => toFormat(password, format), [password, format]);
   const strength = STRENGTH[analysis.strengthLevel];
 
+  // Usage analytics: settings only (mode, length, character classes) — never the generated value.
+  const settings = useCallback((): Record<string, string | number | boolean> => mode === 'random'
+    ? { mode, length: randomOptions.length, upper: randomOptions.uppercase, lower: randomOptions.lowercase, digit: randomOptions.numbers, symbol: randomOptions.symbols }
+    : { mode }, [mode, randomOptions]);
+  // One event once the settings rest, not one per slider step. A value generated before consent (e.g. on page
+  // load) is reported right before it is copied, so the generate → copy funnel stays complete.
+  const reported = useRef('');
+  const reportGenerated = useCallback(() => {
+    if (!password || reported.current === password) return;
+    reported.current = password;
+    track('password_generated', settings());
+  }, [password, settings]);
+  useEffect(() => {
+    if (!password) return;
+    const timer = setTimeout(() => { if (window.dca) reportGenerated(); }, 1500);
+    return () => clearTimeout(timer);
+  }, [password, reportGenerated]);
+
   const regenerate = useCallback(() => setNonce((n) => n + 1), []);
   const copy = useCallback(async () => {
     if (!displayed) return;
+    reportGenerated();
+    track('password_copy_clicked', { mode });
     if (await copyText(displayed)) {
+      track('password_copied', { mode });
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
-    }
-  }, [displayed]);
+    } else track('ui_error', { code: 'copy_failed' });
+  }, [displayed, mode, reportGenerated]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

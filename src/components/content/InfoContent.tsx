@@ -1,7 +1,7 @@
 'use client';
 
 import { cardList,Collapsible } from '@/components/tools/ToolArticle';
-import { META_PIXEL_ID } from '@/lib/analytics';
+import { DEVCONTROL_KEY,META_PIXEL_ID } from '@/lib/analytics';
 import { PageHeader } from '@/components/ui/form';
 import { useLocale } from '@/lib/i18n';
 import { en } from '@/lib/i18n/en';
@@ -81,6 +81,7 @@ export function PrivacyContent() {
           <Item term="Randomness">All random values come from the browser’s Web Crypto CSPRNG. If it is unavailable the operation fails instead of falling back to a weaker source.</Item>
           <Item term="Files">Files you hash are read into memory in the browser (max 10 MiB) and are not uploaded.</Item>
           <Item term="Stored preferences">Your theme, sidebar and cookie choice are kept in localStorage. Secrets and results are never stored.</Item>
+          {DEVCONTROL_KEY && <Item term="Usage measurement">After you accept, a small first-party script (DevControl, run by the site owner) counts page views and a few anonymous product steps such as “password generated” and “copied”, with only the settings used (mode, length, character types). It sets no cookies, stores no IP address, keeps a random session ID only in your browser tab and never receives what you type or the generated values. Rejecting or later withdrawing consent stops it immediately.</Item>}
           {META_PIXEL_ID ? (
             <Item term="Analytics and ads">Google Analytics 4 (visit statistics) and the Meta Pixel (ad measurement) load only after you click “Accept” in the cookie banner; until then, and if you reject, no third-party script runs and no tracking cookie is set. When accepted, they receive the page address, browser and device information and an anonymous visitor ID, and set their own cookies. What you type into the tools and their results are never sent to them; Meta’s automatic button and form data collection is turned off. You can change your choice at any time with “Cookie settings” at the bottom of the page.</Item>
           ) : (
@@ -100,6 +101,7 @@ export function PrivacyContent() {
         <Item term="Rastgelelik">Tüm rastgele değerler tarayıcının Web Crypto CSPRNG kaynağından gelir. Bu kaynak yoksa işlem daha zayıf bir yönteme geçmez, hata verir.</Item>
         <Item term="Dosyalar">Hash’i alınan dosyalar tarayıcı belleğinde okunur (en fazla 10 MiB) ve yüklenmez.</Item>
         <Item term="Saklanan tercihler">Tema, kenar menüsü ve çerez tercihiniz localStorage’da tutulur. Gizli değerler ve sonuçlar hiçbir yerde saklanmaz.</Item>
+          {DEVCONTROL_KEY && <Item term="Kullanım ölçümü">Kabul ettiğinizde site sahibine ait küçük bir birinci taraf kod (DevControl) sayfa görüntülemelerini ve “parola üretildi”, “kopyalandı” gibi birkaç anonim kullanım adımını yalnızca kullanılan ayarlarla (mod, uzunluk, karakter türleri) sayar. Çerez oluşturmaz, IP adresi saklamaz, rastgele oturum kimliğini yalnızca tarayıcı sekmenizde tutar; yazdığınız değerleri ve üretilen sonuçları hiçbir koşulda almaz. Reddettiğinizde veya onayı geri aldığınızda hemen durur.</Item>}
         {META_PIXEL_ID ? (
           <Item term="Analitik ve reklam ölçümü">Google Analytics 4 (ziyaret istatistikleri) ve Meta Pixel (reklam ölçümü) yalnız çerez penceresinde “Kabul et”e bastığınızda yüklenir; o zamana kadar ve reddederseniz hiçbir üçüncü taraf kodu çalışmaz, izleme çerezi oluşturulmaz. Kabul ettiğinizde bu servisler sayfa adresini, tarayıcı ve cihaz bilgisini ve anonim bir ziyaretçi kimliğini alır ve kendi çerezlerini oluşturur. Araçlara yazdığınız değerler ve sonuçlar bu servislere hiçbir koşulda gönderilmez; Meta’nın düğme ve form verisini otomatik toplaması kapalıdır. Tercihinizi sayfanın altındaki “Çerez tercihleri” bağlantısıyla istediğiniz zaman değiştirebilirsiniz.</Item>
         ) : (
