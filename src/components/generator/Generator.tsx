@@ -7,6 +7,7 @@ import { buildSnippet,SNIPPET_LANGUAGES,type SnippetLanguage } from '@/lib/snipp
 import { ENGLISH_WORDS,TURKISH_WORDS } from '@/lib/wordlists';
 import type { GenerationMode,PassphraseOptions,PinOptions,RandomPasswordOptions,StrengthLevel } from '@/types/password';
 import { Check,ChevronDown,ChevronRight,Copy,Eye,EyeOff,RotateCw } from 'lucide-react';
+import { track } from '@/lib/devcontrol';
 import { useLocale } from '@/lib/i18n';
 import { localizeMessage } from '@/lib/i18n/messages';
 import Link from 'next/link';
@@ -166,14 +167,27 @@ export function Generator({ initialMode = 'random', heading }: { initialMode?: G
   const displayed = useMemo(() => toFormat(password, format), [password, format]);
   const strength = STRENGTH[analysis.strengthLevel];
 
+  // Usage analytics: settings only (mode, length, character classes) — never the generated value.
+  const settings = useCallback((): Record<string, string | number | boolean> => mode === 'random'
+    ? { mode, length: randomOptions.length, upper: randomOptions.uppercase, lower: randomOptions.lowercase, digit: randomOptions.numbers, symbol: randomOptions.symbols }
+    : { mode }, [mode, randomOptions]);
+  // One event once the settings rest, not one per slider step.
+  useEffect(() => {
+    if (!password) return;
+    const timer = setTimeout(() => track('password_generated', settings()), 1500);
+    return () => clearTimeout(timer);
+  }, [password, settings]);
+
   const regenerate = useCallback(() => setNonce((n) => n + 1), []);
   const copy = useCallback(async () => {
     if (!displayed) return;
+    track('password_copy_clicked', { mode });
     if (await copyText(displayed)) {
+      track('password_copied', { mode });
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
-    }
-  }, [displayed]);
+    } else track('ui_error', { code: 'copy_failed' });
+  }, [displayed, mode]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

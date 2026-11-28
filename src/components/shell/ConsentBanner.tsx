@@ -7,6 +7,7 @@ import { usePreference } from '@/lib/preferences';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect,useRef,useState } from 'react';
+import { loadDevControl,stopDevControl } from '@/lib/devcontrol';
 
 /** Fired by the footer's "cookie settings" link to show the banner again. */
 export const OPEN_CONSENT_EVENT = 'parola-consent-open';
@@ -83,6 +84,7 @@ export function ConsentBanner() {
     if (!ANALYTICS_ENABLED || consent !== 'granted') return;
     loadGa();
     loadPixel();
+    loadDevControl();
     if (META_PIXEL_ID && lastPath.current !== pathname) window.fbq?.('track', 'PageView');
     lastPath.current = pathname;
   }, [consent, pathname]);
@@ -92,6 +94,7 @@ export function ConsentBanner() {
   const choose = (value: 'granted' | 'denied') => {
     setConsent(value);
     setReopened(false);
+    if (value === 'denied') stopDevControl();
     // Withdrawing consent cannot unload scripts already running; a reload starts the page without them.
     if (value === 'denied' && (window.gtag || window.fbq)) window.location.reload();
   };

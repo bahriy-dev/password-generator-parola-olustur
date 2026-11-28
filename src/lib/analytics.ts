@@ -7,7 +7,13 @@ export const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? '';
 /** When set, GA4 is loaded through this Tag Manager container (which holds the GA4 tag) instead of gtag.js directly. */
 export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? '';
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '';
-export const ANALYTICS_ENABLED = Boolean(GA_ID || GTM_ID || META_PIXEL_ID);
+/**
+ * First-party usage analytics in DevControl (the owner's monitoring panel). The key is public (it only lets the
+ * collector accept events for this site); the tracker sends nothing before consent and stores no cookies.
+ */
+export const DEVCONTROL_KEY = process.env.NEXT_PUBLIC_DEVCONTROL_KEY ?? '';
+export const DEVCONTROL_ORIGIN = (process.env.NEXT_PUBLIC_DEVCONTROL_ORIGIN ?? 'https://devcontrol.up.railway.app').replace(/\/$/, '');
+export const ANALYTICS_ENABLED = Boolean(GA_ID || GTM_ID || META_PIXEL_ID || DEVCONTROL_KEY);
 
 export const CONSENT_KEY = 'parola_consent';
 export type Consent = 'granted' | 'denied';
@@ -24,6 +30,10 @@ export function trackerCsp(): { script: string; connect: string; img: string } {
     script.push('https://connect.facebook.net');
     connect.push('https://www.facebook.com', 'https://connect.facebook.net');
     img.push('https://www.facebook.com');
+  }
+  if (DEVCONTROL_KEY) {
+    script.push(DEVCONTROL_ORIGIN);
+    connect.push(DEVCONTROL_ORIGIN);
   }
   const join = (list: string[]) => (list.length ? ' ' + list.join(' ') : '');
   return { script: join(script), connect: join(connect), img: join(img) };
